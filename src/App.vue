@@ -5,5 +5,5 @@ import ChatWidget from './components/ChatWidget.vue';
 <template>
   <h1>My Website</h1>
 
-  <ChatWidget chat-url="https://chat.supportai.it/example"/>
+  <ChatWidget chat-url="https://chat.supportai.it/example" />
 </template>

@@ -1,12 +1,12 @@
 <template>
   <!-- Chat Frame -->
   <div v-show="isChatVisible" :style="chatFrameStyles">
-    <iframe :src="chatUrl" :width="frameWidth.toString()" :height="frameHeight.toString()" title="Chat Widget" />
+    <iframe :src="chatUrl" :width="`${frameWidth}`" :height="`${frameHeight}`" title="Chat Widget" />
   </div>
 
   <!-- Chat Button -->
   <div @click="toggleChatVisibility" class="chat-button-container">
-    <div class="chat-button">
+    <div class="chat-button" :style="chatButtonStyles" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
       <!-- SVG Icon -->
       <svg viewBox="0 0 24 24" width="32" height="32">
         <path fill="currentColor"
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, PropType } from 'vue';
+import { ref, computed, PropType, CSSProperties } from 'vue';
 
 const props = defineProps({
   chatUrl: {
@@ -47,44 +47,42 @@ const props = defineProps({
 });
 
 const isChatVisible = ref(false);
+const isHovered = ref(false);
 
 const toggleChatVisibility = () => {
   isChatVisible.value = !isChatVisible.value;
 };
 
-const chatFrameStyles = computed(() => ({
+const chatFrameStyles = computed<CSSProperties>(() => ({
   position: 'fixed',
-  bottom: `calc(${props.buttonSize ?? '64px'} + 25px)`,
+  bottom: `calc(${props.buttonSize} + 25px)`,
   right: '1rem',
   zIndex: 999,
   display: isChatVisible.value ? 'block' : 'none',
 }));
+
+// Chat button styles using template literals and props
+const chatButtonStyles = computed<CSSProperties>(() => ({
+  backgroundColor: isHovered.value ? `${props.buttonHoverColor}` : `${props.buttonColor}`,
+  width: `${props.buttonSize}`,
+  height: `${props.buttonSize}`,
+  borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: '#fff',
+  transition: 'transform 0.15s ease, background-color 0.15s ease',
+  transform: isHovered.value ? 'scale(1.05)' : 'scale(1)',
+}));
 </script>
 
-<style lang="css" scoped>
+<style scoped>
 .chat-button-container {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
   z-index: 9999;
   cursor: pointer;
-}
-
-.chat-button {
-  background-color: var(--buttonColor, #e74266);
-  color: #fff;
-  width: var(--buttonSize, 64px);
-  height: var(--buttonSize, 64px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s ease;
-}
-
-.chat-button:hover {
-  transform: scale(1.05);
-  background-color: var(--buttonHoverColor, #d6365d) !important;
 }
 
 iframe {
