@@ -17,39 +17,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, CSSProperties } from 'vue';
+import { ref, computed, CSSProperties } from 'vue';
 
-const props = defineProps({
-  chatUrl: {
-    type: String as PropType<string>,
-    required: true,
-  },
-  buttonColor: {
-    type: String as PropType<string>,
-    default: '#e74266',
-  },
-  buttonHoverColor: {
-    type: String as PropType<string>,
-    default: '#d6365d',
-  },
-  buttonSize: {
-    type: String as PropType<string>,
-    default: '64px',
-  },
-  frameWidth: {
-    type: [String, Number] as PropType<string | number>,
-    default: 400,
-  },
-  frameHeight: {
-    type: [String, Number] as PropType<string | number>,
-    default: 600,
-  },
+interface Props {
+  chatUrl: string;
+  buttonColor?: string;
+  buttonHoverColor?: string;
+  buttonSize?: string;
+  frameWidth?: string | number;
+  frameHeight?: string | number;
+  getContext?: () => string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  buttonColor: '#e74266',
+  buttonHoverColor: '#d6365d',
+  buttonSize: '64px',
+  frameWidth: 400,
+  frameHeight: 600,
 });
 
 const isChatVisible = ref(false);
 const isHovered = ref(false);
+const chatUrl = ref(props.chatUrl);
 
 const toggleChatVisibility = () => {
+  if(props.getContext) {
+    const context = props.getContext();
+
+    // update the iframe url to include context as a query parameter
+    const url = new URL(props.chatUrl);
+    url.searchParams.append('context', context);
+    chatUrl.value = url.toString();
+  }
   isChatVisible.value = !isChatVisible.value;
 };
 
