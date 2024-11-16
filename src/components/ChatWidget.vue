@@ -1,7 +1,7 @@
 <template>
   <!-- Chat Frame -->
   <div v-show="isChatVisible" :style="chatFrameStyles">
-    <iframe :src="chatUrl" :width="`${frameWidth}`" :height="`${frameHeight}`" title="Chat Widget" />
+    <iframe :src="chatUrl" title="Chat Widget" />
   </div>
 
   <!-- Chat Button -->
@@ -33,8 +33,6 @@ const props = withDefaults(defineProps<Props>(), {
   buttonColor: '#e74266',
   buttonHoverColor: '#d6365d',
   buttonSize: '64px',
-  frameWidth: 400,
-  frameHeight: 600,
 });
 
 const isChatVisible = ref(false);
@@ -58,7 +56,11 @@ const chatFrameStyles = computed<CSSProperties>(() => ({
   bottom: `calc(${props.buttonSize} + 25px)`,
   right: '1rem',
   zIndex: 999,
-  display: isChatVisible.value ? 'block' : 'none',
+  display: isChatVisible.value ? 'flex' : 'none',
+  width: '100%',
+  height: '100%',
+  justifyContent: 'flex-end',
+  alignItems: 'flex-end'
 }));
 
 // Chat button styles using template literals and props
@@ -89,5 +91,9 @@ iframe {
   border: none;
   overflow: hidden;
   transform-origin: bottom right;
+  width: 90%;
+  max-width: 400px;
+  height: 80%;
+  max-height: 600px;
 }
 </style>
