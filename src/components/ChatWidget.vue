@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import { ref, computed, CSSProperties } from 'vue';
 
+
 interface Props {
   chatUrl: string;
   buttonColor?: string;
@@ -26,7 +27,7 @@ interface Props {
   buttonSize?: string;
   frameWidth?: string | number;
   frameHeight?: string | number;
-  getContext?: () => string
+  getContext?: () => string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -39,61 +40,73 @@ const isChatVisible = ref(false);
 const isHovered = ref(false);
 const chatUrl = ref(props.chatUrl);
 
-const toggleChatVisibility = () => {
-  if(props.getContext) {
+const updateContext = () => {
+  if (props.getContext) {
     const context = props.getContext();
-
-    // update the iframe url to include context as a query parameter
     const url = new URL(props.chatUrl);
     url.searchParams.append('context', context);
     chatUrl.value = url.toString();
   }
+}
+
+const toggleChatVisibility = () => {
+  updateContext();
   isChatVisible.value = !isChatVisible.value;
 };
 
+
 const chatFrameStyles = computed<CSSProperties>(() => ({
   position: 'fixed',
-  bottom: `calc(${props.buttonSize} + 25px)`,
+  bottom: `calc(${props.buttonSize} + 1.5rem)`,
   right: '1rem',
-  zIndex: 999,
+  zIndex: '999',
   display: isChatVisible.value ? 'flex' : 'none',
-  width: '100%',
-  height: '100%',
   justifyContent: 'flex-end',
-  alignItems: 'flex-end'
+  alignItems: 'flex-end',
+  width: '90vw',
+  maxWidth: '400px',
+  height: '80vh',
+  maxHeight: '600px',
+  border: 'none',
+  overflow: 'hidden',
+  transformOrigin: 'bottom right',
 }));
 
-// Chat button styles using template literals and props
 const chatButtonStyles = computed<CSSProperties>(() => ({
-  backgroundColor: isHovered.value ? `${props.buttonHoverColor}` : `${props.buttonColor}`,
-  width: `${props.buttonSize}`,
-  height: `${props.buttonSize}`,
+  position: 'fixed',
+  bottom: '1rem',
+  right: '1rem',
+  zIndex: '9999',
+  cursor: 'pointer',
+  backgroundColor: isHovered.value ? props.buttonHoverColor : props.buttonColor,
+  color: '#fff',
+  width: props.buttonSize,
+  height: props.buttonSize,
   borderRadius: '50%',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: '#fff',
   transition: 'transform 0.15s ease, background-color 0.15s ease',
   transform: isHovered.value ? 'scale(1.05)' : 'scale(1)',
 }));
 </script>
 
 <style scoped>
+iframe {
+  position: absolute;
+  width: 90vw;
+  max-width: 400px;
+  height: 80vh;
+  max-height: 600px;
+  border: none;
+  overflow: hidden;
+  transform-origin: bottom right;
+}
 .chat-button-container {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
   z-index: 9999;
   cursor: pointer;
-}
-
-iframe {
-  border: none;
-  overflow: hidden;
-  transform-origin: bottom right;
-  width: 90%;
-  max-width: 400px;
-  height: 80%;
-  max-height: 600px;
 }
 </style>
